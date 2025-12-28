@@ -1712,6 +1712,8 @@ namespace Amib.Threading
         #endregion
 
         #region Join, Choice, Pipe, etc.
+        
+#if NET35_OR_GREATER
 
         /// <summary>
         /// Executes all actions in parallel.
@@ -1740,11 +1742,12 @@ namespace Amib.Threading
             Join((IEnumerable<Action>)actions);
         }
 
+
         private class ChoiceIndex
         {
             public int _index = -1;
         }
-
+        
         /// <summary>
         /// Executes all actions in parallel
         /// Returns when the first one completes
@@ -1812,6 +1815,8 @@ namespace Amib.Threading
         {
             Pipe(pipeState, (IEnumerable<Action<T>>)actions);
         }
+
+#endif
         #endregion
 	}
 	#endregion

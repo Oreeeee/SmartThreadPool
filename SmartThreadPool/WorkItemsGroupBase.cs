@@ -275,6 +275,8 @@ namespace Amib.Threading.Internal
         }
 
         #endregion
+        
+#if NET35_OR_GREATER
 
         #region QueueWorkItem(Action<...>)
 
@@ -443,6 +445,8 @@ namespace Amib.Threading.Internal
         }
 
         #endregion
+
+#endif
 
         #endregion
     }
