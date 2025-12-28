@@ -301,6 +301,11 @@ namespace Amib.Threading
 		private bool _isDisposed;
 
 		/// <summary>
+		/// Indicate whether the SmartThreadPool is idle
+		/// </summary>
+		private bool _isIdle;
+
+		/// <summary>
 		/// Holds all the WorkItemsGroup instaces that have at least one 
 		/// work item int the SmartThreadPool
 		/// This variable is used in case of Shutdown
@@ -337,6 +342,11 @@ namespace Amib.Threading
         /// it is no longer belong to the pool.
         /// </summary>
         private event ThreadTerminationHandler _onThreadTermination;
+
+        /// <summary>
+        /// The OnIdle event
+        /// </summary>
+        private event WorkItemsGroupIdleHandler _onIdle;
 
         #endregion
 
@@ -1589,6 +1599,20 @@ namespace Amib.Threading
 	        }
 	    }
 
+	    public new bool IsIdle
+	    {
+			get => _isIdle;
+		    protected set
+		    {
+			    // Fire only when we're setting the state to idle and if it wasn't idle already
+			    if (value && !_isIdle)
+			    {
+				    _onIdle?.Invoke(this);
+			    }
+			    _isIdle = value;
+		    }
+	    }
+
         /// <summary>
         /// Get an array with all the state objects of the currently running items.
         /// The array represents a snap shot and impact performance.
@@ -1670,21 +1694,11 @@ namespace Amib.Threading
         /// <summary>
         /// This event is fired when all work items are completed.
         /// (When IsIdle changes to true)
-        /// This event only work on WorkItemsGroup. On SmartThreadPool
-        /// it throws the NotImplementedException.
         /// </summary>
         public override event WorkItemsGroupIdleHandler OnIdle
         {
-            add
-            {
-                throw new NotImplementedException("This event is not implemented in the SmartThreadPool class. Please create a WorkItemsGroup in order to use this feature.");
-                //_onIdle += value;
-            }
-            remove
-            {
-                throw new NotImplementedException("This event is not implemented in the SmartThreadPool class. Please create a WorkItemsGroup in order to use this feature.");
-                //_onIdle -= value;
-            }
+            add => _onIdle += value;
+            remove => _onIdle -= value;
         }
 
 	    internal override void PreQueueWorkItem()
